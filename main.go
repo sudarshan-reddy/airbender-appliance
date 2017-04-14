@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/sudarshan-reddy/airbender-appliance/handlers"
@@ -10,9 +11,10 @@ import (
 )
 
 const (
-	d4      = 4
-	a1      = 1
-	address = 0x04
+	d4           = 4
+	a0           = 14
+	address      = 0x04
+	timeInterval = 3 * time.Millisecond
 )
 
 func failOnError(err error, msg string) {
@@ -28,4 +30,12 @@ func main() {
 	handlers.TurnLEDOn(groveHandler, d4)
 	time.Sleep(1 * time.Second)
 	handlers.TurnLEDOff(groveHandler, d4)
+	ticker := time.NewTicker(timeInterval)
+	defer ticker.Stop()
+	for reading := range handlers.MonitorAirQuality(groveHandler, a0, ticker) {
+		if reading.Err != nil {
+			return
+		}
+		fmt.Println("sensor reading: ", reading.Reading)
+	}
 }
