@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
+	"github.com/prometheus/common/log"
 	"github.com/sudarshan-reddy/airbender-appliance/handlers"
 	"github.com/sudarshan-reddy/groove"
 
@@ -36,6 +36,6 @@ func main() {
 		if reading.Err != nil {
 			return
 		}
-		fmt.Println("sensor reading: ", reading.Reading)
+		log.Infoln("sensor reading: ", reading.Reading)
 	}
 }
