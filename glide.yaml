@@ -1,0 +1,4 @@
+package: github.com/sudarshan-reddy/airbender-appliance
+import:
+- package: github.com/Sirupsen/logrus
+- package: github.com/sudarshan-reddy/groove

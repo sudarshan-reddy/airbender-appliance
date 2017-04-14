@@ -1,0 +1,14 @@
+hash: 231e5115e283338c2957b2cd50bf72c4aa2b5f52ceb3d741a69b6b9f1b88bf41
+updated: 2017-04-14T17:29:19.52673811+05:30
+imports:
+- name: github.com/mrmorphic/hwio
+  version: 4af3c0a919085ce9b99bbe5a8e3334b805618c2e
+- name: github.com/Sirupsen/logrus
+  version: 4b6ea7319e214d98c938f12692336f7ca9348d6b
+- name: github.com/sudarshan-reddy/groove
+  version: df9be8074719f714d943bbde271164781c333b42
+- name: golang.org/x/sys
+  version: e24f485414aeafb646f6fca458b0bf869c0880a1
+  subpackages:
+  - unix
+testImports: []
