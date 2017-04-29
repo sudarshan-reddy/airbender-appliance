@@ -1,13 +1,17 @@
 package main
 
 import (
+	"encoding/json"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
-	"github.com/prometheus/common/log"
 	"github.com/sudarshan-reddy/airbender-appliance/handlers"
+	"github.com/sudarshan-reddy/airbender-appliance/mq"
 	"github.com/sudarshan-reddy/groove"
 
-	"github.com/Sirupsen/logrus"
+	log "github.com/Sirupsen/logrus"
 )
 
 const (
@@ -19,23 +23,62 @@ const (
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		logrus.Fatalf("%s: %s", err, msg)
+		log.Fatalf("%s: %s", err, msg)
 	}
 }
 
 func main() {
 	groveHandler, err := groove.InitGroove(address)
-	defer groveHandler.Close()
 	failOnError(err, "failed to initialise grove")
+	defer groveHandler.Close()
+	cfg, err := loadConfigs()
+	failOnError(err, "failed to load configs")
+
 	handlers.TurnLEDOn(groveHandler, d4)
-	time.Sleep(1 * time.Second)
-	handlers.TurnLEDOff(groveHandler, d4)
+	defer handlers.TurnLEDOff(groveHandler, d4)
 	ticker := time.NewTicker(timeInterval)
 	defer ticker.Stop()
-	for reading := range handlers.MonitorAirQuality(groveHandler, a0, ticker) {
+	done := make(chan struct{})
+
+	mqttClient := mq.NewClient(cfg.MQTTTopic, cfg.MQTTURL, cfg.MQTTClient)
+
+	for reading := range handlers.MonitorAirQuality(done, groveHandler, a0, ticker) {
 		if reading.Err != nil {
-			return
+			log.Fatal(reading.Err)
 		}
-		log.Infoln("sensor reading: ", reading.Reading)
+		message, err := prepMessage(reading.Reading, cfg.ApplianceName)
+		if err != nil {
+			log.Fatal(err)
+		}
+		mqttClient.Publish(message)
+		log.Infoln("published: ", message)
 	}
+
+	signalCh := make(chan os.Signal)
+	signal.Notify(signalCh, syscall.SIGINT, syscall.SIGTERM)
+
+	<-signalCh
+	close(done)
+	log.Infoln("Closing Grove...")
+}
+
+type message struct {
+	Source string `json:"name"`
+	Time   string `json:"timeStamp"`
+	AirQ   int    `json:"readingAQ"`
+	Error  string `json:"error"`
+}
+
+func prepMessage(reading int, name string) (string, error) {
+	t := time.Now()
+	msg := &message{Source: name,
+		Time: t.Format("20060102150405"),
+		AirQ: reading,
+	}
+
+	bdy, err := json.Marshal(msg)
+	if err != nil {
+		return "", err
+	}
+	return string(bdy), err
 }
