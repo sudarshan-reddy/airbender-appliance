@@ -15,7 +15,7 @@ type AirSensorResponse struct {
 
 // MonitorAirQuality takes in the handler, pin and
 // monitor interval and returns it to a channel
-func MonitorAirQuality(grove groove.Handler, pin byte,
+func MonitorAirQuality(done chan struct{}, grove groove.Handler, pin byte,
 	ticker *time.Ticker) chan AirSensorResponse {
 	airResponse := make(chan AirSensorResponse)
 	fmt.Println("air quality monitor starting")
@@ -23,10 +23,15 @@ func MonitorAirQuality(grove groove.Handler, pin byte,
 	go func() {
 		defer close(airResponse)
 		for range ticker.C {
-			reading, err := grove.AnalogRead(pin)
-			airResponse <- AirSensorResponse{
-				Reading: reading,
-				Err:     err,
+			select {
+			case <-done:
+				return
+			default:
+				reading, err := grove.AnalogRead(pin)
+				airResponse <- AirSensorResponse{
+					Reading: reading,
+					Err:     err,
+				}
 			}
 		}
 	}()
