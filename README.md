@@ -21,13 +21,9 @@ Raspbian
 ### Run: 
 
 #### Compile for Raspberry Pi:
-    ```
     GOOS=linux GOARCH=arm go build
-    ```
     scp binary and `variables.env` to pi
 
 #### Running the binary:
-    ```
     source variables.env
     run ./airbender-appliance
-    ```
