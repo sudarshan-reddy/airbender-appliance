@@ -46,17 +46,13 @@ func main() {
 	defer ticker.Stop()
 	done := make(chan struct{})
 
-	mqttClient := mq.NewClient(cfg.MQTTTopic, cfg.MQTTURL, cfg.MQTTClient)
+	mqttClient, err := mq.NewClient(cfg.MQTTTopic, cfg.MQTTURL, cfg.MQTTClient)
+	failOnError(err, "failed to load client")
 	defer mqttClient.Close()
 
 	for reading := range handlers.MonitorAirQuality(done, groveHandler, a0, ticker) {
-		if reading.Err != nil {
-			log.Fatal(reading.Err)
-		}
-		message, err := prepMessage(reading.Reading, cfg.ApplianceName)
-		if err != nil {
-			log.Fatal(err)
-		}
+		message, err := prepMessage(reading.Reading, cfg.ApplianceName, reading.Err)
+		failOnError(err, "error preparing message")
 		mqttClient.Publish(message)
 		log.Infoln("published: ", message)
 	}
@@ -76,11 +72,16 @@ type message struct {
 	Error  string `json:"error"`
 }
 
-func prepMessage(reading int, name string) (string, error) {
+func prepMessage(reading int, name string, ipErr error) (string, error) {
 	t := time.Now()
+	var errMsg string
+	if ipErr != nil {
+		errMsg = ipErr.Error()
+	}
 	msg := &message{Source: name,
-		Time: t.Format("20060102150405"),
-		AirQ: reading,
+		Time:  t.Format("20060102150405"),
+		AirQ:  reading,
+		Error: errMsg,
 	}
 
 	bdy, err := json.Marshal(msg)

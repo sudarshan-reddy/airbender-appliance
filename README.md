@@ -15,19 +15,19 @@ Raspbian
 
 ### Installation: 
  ```bash 
- git clone github.com/sudarshan-reddy/airbender-appliance
+ go get github.com/sudarshan-reddy/airbender-appliance
  ```
 
 ### Run: 
 
 #### Compile for Raspberry Pi:
-    ```bash
+    ```
     GOOS=linux GOARCH=arm go build
     ```
     scp binary and `variables.env` to pi
 
 #### Running the binary:
-    ```bash
+    ```
     source variables.env
     run ./airbender-appliance
     ```

@@ -3,7 +3,6 @@ package mq
 import (
 	"crypto/tls"
 	"fmt"
-	"log"
 	"net/url"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -16,7 +15,7 @@ type Client struct {
 }
 
 // NewClient returns a new instance of Client
-func NewClient(clientID, raw, topic string) *Client {
+func NewClient(clientID, raw, topic string) (*Client, error) {
 	uri, _ := url.Parse(raw)
 	server := (fmt.Sprintf("tcp://%s", uri.Host))
 	username := uri.User.Username()
@@ -31,9 +30,9 @@ func NewClient(clientID, raw, topic string) *Client {
 	client := &Client{Client: mqtt.NewClient(connOpts), Topic: topic}
 
 	if token := client.Client.Connect(); token.Wait() && token.Error() != nil {
-		log.Fatal(token.Error())
+		return nil, token.Error()
 	}
-	return client
+	return client, nil
 }
 
 // Publish publishes a message to the predefined topic
