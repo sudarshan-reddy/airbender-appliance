@@ -8,6 +8,7 @@ type Config struct {
 	MQTTTopic     string `envconfig:"MQTT_TOPIC" required:"true"`
 	MQTTClient    string `envconfig:"MQTT_CLIENT" required:"true"`
 	ApplianceName string `envconfig:"APPLIANCE_NAME" required:"true"`
+	LogFileName   string `envconfig:"LOG_FILE_NAME" required:"true"`
 }
 
 func loadConfigs() (*Config, error) {

@@ -3,6 +3,7 @@ package mq
 import (
 	"crypto/tls"
 	"fmt"
+	"log"
 	"net/url"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -27,16 +28,21 @@ func NewClient(clientID, raw, topic string) *Client {
 	tlsConfig := &tls.Config{InsecureSkipVerify: true, ClientAuth: tls.NoClientCert}
 	connOpts.SetTLSConfig(tlsConfig)
 
-	return &Client{Client: mqtt.NewClient(connOpts), Topic: topic}
+	client := &Client{Client: mqtt.NewClient(connOpts), Topic: topic}
 
+	if token := client.Client.Connect(); token.Wait() && token.Error() != nil {
+		log.Fatal(token.Error())
+	}
+	return client
 }
 
 // Publish publishes a message to the predefined topic
 func (m *Client) Publish(message string) error {
-
-	if token := m.Client.Connect(); token.Wait() && token.Error() != nil {
-		return token.Error()
-	}
 	m.Client.Publish(m.Topic, byte(0), false, message)
 	return nil
+}
+
+// Close disconnects
+func (m *Client) Close() {
+	m.Client.Disconnect(250)
 }

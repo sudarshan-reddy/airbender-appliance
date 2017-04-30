@@ -28,11 +28,17 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
+	cfg, err := loadConfigs()
+	failOnError(err, "failed to load configs")
+
+	f, err := os.OpenFile(cfg.LogFileName, os.O_WRONLY|os.O_CREATE, 0755)
+	failOnError(err, "failed to create log file")
+	defer f.Close()
+	log.SetOutput(f)
+
 	groveHandler, err := groove.InitGroove(address)
 	failOnError(err, "failed to initialise grove")
 	defer groveHandler.Close()
-	cfg, err := loadConfigs()
-	failOnError(err, "failed to load configs")
 
 	handlers.TurnLEDOn(groveHandler, d4)
 	defer handlers.TurnLEDOff(groveHandler, d4)
@@ -41,6 +47,7 @@ func main() {
 	done := make(chan struct{})
 
 	mqttClient := mq.NewClient(cfg.MQTTTopic, cfg.MQTTURL, cfg.MQTTClient)
+	defer mqttClient.Close()
 
 	for reading := range handlers.MonitorAirQuality(done, groveHandler, a0, ticker) {
 		if reading.Err != nil {
