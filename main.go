@@ -30,7 +30,6 @@ func failOnError(err error, msg string) {
 func main() {
 	cfg, err := loadConfigs()
 	failOnError(err, "failed to load configs")
-	t := time.Now()
 	zone, err := time.LoadLocation(cfg.TimeZone)
 	failOnError(err, "error loading location")
 	f, err := os.OpenFile(cfg.LogFileName, os.O_WRONLY|os.O_CREATE, 0755)
@@ -53,8 +52,7 @@ func main() {
 	defer mqttClient.Close()
 
 	for reading := range handlers.MonitorAirQuality(done, groveHandler, a0, ticker) {
-		timeString := t.In(zone).Format("20060102150405")
-		message, err := prepMessage(timeString, reading.Reading, cfg.ApplianceName, reading.Err)
+		message, err := prepMessage(zone, reading.Reading, cfg.ApplianceName, reading.Err)
 		failOnError(err, "error preparing message")
 		mqttClient.Publish(message)
 		log.Infoln("published: ", message)
@@ -75,14 +73,14 @@ type message struct {
 	Error  string `json:"error"`
 }
 
-func prepMessage(t string, reading int, name string, ipErr error) (string, error) {
-
+func prepMessage(zone *time.Location, reading int, name string, ipErr error) (string, error) {
+	t := time.Now()
 	var errMsg string
 	if ipErr != nil {
 		errMsg = ipErr.Error()
 	}
 	msg := &message{Source: name,
-		Time:  t,
+		Time:  t.In(zone).Format("20060102150405"),
 		AirQ:  reading,
 		Error: errMsg,
 	}
