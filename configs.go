@@ -9,6 +9,7 @@ type Config struct {
 	MQTTClient    string `envconfig:"MQTT_CLIENT" required:"true"`
 	ApplianceName string `envconfig:"APPLIANCE_NAME" required:"true"`
 	LogFileName   string `envconfig:"LOG_FILE_NAME" required:"true"`
+	TimeZone      string `envconfig:"TIME_ZONE" required:"true"`
 }
 
 func loadConfigs() (*Config, error) {
