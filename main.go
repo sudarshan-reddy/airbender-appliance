@@ -10,11 +10,13 @@ import (
 	"github.com/sudarshan-reddy/airbender-appliance/handlers"
 	"github.com/sudarshan-reddy/airbender-appliance/mq"
 	"github.com/sudarshan-reddy/groove"
+	"github.com/sudarshan-reddy/groove/dht"
 
 	log "github.com/Sirupsen/logrus"
 )
 
 const (
+	d3           = 3
 	d4           = 4
 	a0           = 14
 	address      = 0x04
@@ -41,12 +43,11 @@ func main() {
 	failOnError(err, "failed to initialise grove")
 	defer groveHandler.Close()
 
-	handlers.TurnLEDOn(groveHandler, d4)
-	defer handlers.TurnLEDOff(groveHandler, d4)
 	ticker := time.NewTicker(timeInterval)
 	defer ticker.Stop()
 	done := make(chan struct{})
 
+	go ledCycle(groveHandler, done)
 	mqttClient, err := mq.NewClient(cfg.MQTTTopic, cfg.MQTTURL, cfg.MQTTClient)
 	failOnError(err, "failed to load client")
 	defer mqttClient.Close()
@@ -63,13 +64,34 @@ func main() {
 
 	<-signalCh
 	close(done)
+	handlers.TurnLEDOff(groveHandler, d3)
 	log.Infoln("Closing Grove...")
+}
+
+func ledCycle(groveHandler groove.Handler, done chan struct{}) {
+loop:
+	for {
+		select {
+		case <-done:
+			handlers.TurnLEDOff(groveHandler, d3)
+			break loop
+		default:
+			handlers.TurnLEDOn(groveHandler, d3)
+			time.Sleep(500 * time.Millisecond)
+			handlers.TurnLEDOff(groveHandler, d3)
+			time.Sleep(500 * time.Millisecond)
+		}
+	}
 }
 
 type message struct {
 	Source string `json:"name"`
 	Time   string `json:"timeStamp"`
 	AirQ   int    `json:"readingAQ"`
+	Cel    int    `json:"celsius"`
+	Far    int    `json:"farenheit"`
+	Hum    int    `json:"humidity"`
+	Zone   string `json:"timeZone"`
 	Error  string `json:"error"`
 }
 
@@ -79,9 +101,14 @@ func prepMessage(zone *time.Location, reading int, name string, ipErr error) (st
 	if ipErr != nil {
 		errMsg = ipErr.Error()
 	}
+	c, f, h := dht.ReadDHT()
 	msg := &message{Source: name,
 		Time:  t.In(zone).Format("20060102150405"),
 		AirQ:  reading,
+		Cel:   c,
+		Far:   f,
+		Hum:   h,
+		Zone:  zone.String(),
 		Error: errMsg,
 	}
 
