@@ -51,4 +51,17 @@ chmod+x airbender-appliance
 |AA_TIME_ZONE|Asia/Kolkata| timezone to use
 |MONITOR_INTERVAL|10s| Polling interval
 
+### MQTT message format
 
+```json
+{
+  "name": "home_bedroom_1",
+  "timeStamp": "20170507111302",
+  "readingAQ": 34,
+  "celsius": 32,
+  "farenheit": 90,
+  "humidity": 70,
+  "timeZone": "Asia/Kolkata",
+  "error": ""
+}
+```
