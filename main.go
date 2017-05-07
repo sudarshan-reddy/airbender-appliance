@@ -20,7 +20,7 @@ const (
 	d4           = 4
 	a0           = 14
 	address      = 0x04
-	timeInterval = 3 * time.Millisecond
+	timeInterval = 119 * time.Second
 )
 
 func failOnError(err error, msg string) {
@@ -47,7 +47,6 @@ func main() {
 	defer ticker.Stop()
 	done := make(chan struct{})
 
-	go ledCycle(groveHandler, done)
 	mqttClient, err := mq.NewClient(cfg.MQTTTopic, cfg.MQTTURL, cfg.MQTTClient)
 	failOnError(err, "failed to load client")
 	defer mqttClient.Close()
@@ -101,13 +100,16 @@ func prepMessage(zone *time.Location, reading int, name string, ipErr error) (st
 	if ipErr != nil {
 		errMsg = ipErr.Error()
 	}
-	c, f, h := dht.ReadDHT()
+	vals, err := dht.ReadDHT()
+	if err != nil {
+		errMsg = err.Error()
+	}
 	msg := &message{Source: name,
 		Time:  t.In(zone).Format("20060102150405"),
 		AirQ:  reading,
-		Cel:   c,
-		Far:   f,
-		Hum:   h,
+		Cel:   vals.CelsiusTemp,
+		Far:   vals.FarenheitTemp,
+		Hum:   vals.Humidity,
 		Zone:  zone.String(),
 		Error: errMsg,
 	}

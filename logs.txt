@@ -1,0 +1,4 @@
+time="2017-05-07T04:23:44Z" level=info msg="published:  {"name":"sudarshan_home","timeStamp":"20170507095343","readingAQ":346,"celsius":32,"farenheit":89,"humidity":71,"timeZone":"Asia/Kolkata","error":""}" 
+time="2017-05-07T04:23:45Z" level=info msg="published:  {"name":"sudarshan_home","timeStamp":"20170507095344","readingAQ":346,"celsius":32,"farenheit":89,"humidity":71,"timeZone":"Asia/Kolkata","error":""}" 
+time="2017-05-07T04:23:46Z" level=info msg="published:  {"name":"sudarshan_home","timeStamp":"20170507095345","readingAQ":347,"celsius":32,"farenheit":89,"humidity":71,"timeZone":"Asia/Kolkata","error":""}" 
+time="2017-05-07T04:23:47Z" level=info msg="published:  {"name":"sudarshan_home","timeStamp":"20170507095346","readingAQ":346,"celsius":32,"farenheit":89,"humidity":71,"timeZone":"Asia/Kolkata","error":""}" 

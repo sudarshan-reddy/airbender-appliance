@@ -1,6 +1,8 @@
-hash: e7775ce63c278b1d9a8b41fe4c2f42d3fa8076dad9ca2167c20e0d6d08a0f658
-updated: 2017-04-29T13:29:30.673440256+05:30
+hash: 94d938b340398db63698f97b5c802452cc2a1e2e1ae6269e34d45868833cb1a8
+updated: 2017-05-06T21:56:06.055791576+05:30
 imports:
+- name: github.com/corrupt/go-smbus
+  version: d22f26546b052f91227a2d1c5b49eef19ef06064
 - name: github.com/eclipse/paho.mqtt.golang
   version: 45f9b18f4864c81d49c3ed01e5faec9eeb05de31
   subpackages:
@@ -8,13 +10,15 @@ imports:
 - name: github.com/kelseyhightower/envconfig
   version: f611eb38b3875cc3bd991ca91c51d06446afa14c
 - name: github.com/mrmorphic/hwio
-  version: 4af3c0a919085ce9b99bbe5a8e3334b805618c2e
+  version: 31c3eee75cb2f64e31e0bd6bc20dfb4bfe0f5e80
 - name: github.com/Sirupsen/logrus
   version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
 - name: github.com/sudarshan-reddy/groove
-  version: df9be8074719f714d943bbde271164781c333b42
+  version: 6f8bc4fb17c3e29c3e04846436e5296b3d1fee94
+  subpackages:
+  - dht
 - name: golang.org/x/net
-  version: da118f7b8e5954f39d0d2130ab35d4bf0e3cb344
+  version: feeb485667d1fdabe727840fe00adc22431bc86e
   subpackages:
   - websocket
 - name: golang.org/x/sys
