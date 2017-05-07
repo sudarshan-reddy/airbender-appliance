@@ -16,11 +16,10 @@ import (
 )
 
 const (
-	d3           = 3
-	d4           = 4
-	a0           = 14
-	address      = 0x04
-	timeInterval = 119 * time.Second
+	d3      = 3
+	d4      = 4
+	a0      = 14
+	address = 0x04
 )
 
 func failOnError(err error, msg string) {
@@ -43,7 +42,7 @@ func main() {
 	failOnError(err, "failed to initialise grove")
 	defer groveHandler.Close()
 
-	ticker := time.NewTicker(timeInterval)
+	ticker := time.NewTicker(cfg.MonitorInterval)
 	defer ticker.Stop()
 	done := make(chan struct{})
 
@@ -63,24 +62,7 @@ func main() {
 
 	<-signalCh
 	close(done)
-	handlers.TurnLEDOff(groveHandler, d3)
 	log.Infoln("Closing Grove...")
-}
-
-func ledCycle(groveHandler groove.Handler, done chan struct{}) {
-loop:
-	for {
-		select {
-		case <-done:
-			handlers.TurnLEDOff(groveHandler, d3)
-			break loop
-		default:
-			handlers.TurnLEDOn(groveHandler, d3)
-			time.Sleep(500 * time.Millisecond)
-			handlers.TurnLEDOff(groveHandler, d3)
-			time.Sleep(500 * time.Millisecond)
-		}
-	}
 }
 
 type message struct {

@@ -1,5 +1,5 @@
 hash: b8d0d8014837f85822310a5656861661e0932cffd00c7cd7905d2867eadb93d3
-updated: 2017-05-07T10:01:42.560138808+05:30
+updated: 2017-05-07T10:18:24.303940987+05:30
 imports:
 - name: github.com/corrupt/go-smbus
   version: d22f26546b052f91227a2d1c5b49eef19ef06064
@@ -14,7 +14,7 @@ imports:
 - name: github.com/Sirupsen/logrus
   version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
 - name: github.com/sudarshan-reddy/groove
-  version: 353ad50e373e39bcfb1fe9acd248fec70bd77363
+  version: 5dc778f57bb8bc07746b9212add89f804d70b573
   subpackages:
   - dht
 - name: golang.org/x/net
