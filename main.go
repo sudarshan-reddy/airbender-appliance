@@ -46,7 +46,7 @@ func main() {
 	defer ticker.Stop()
 	done := make(chan struct{})
 
-	mqttClient, err := mq.NewClient(cfg.MQTTTopic, cfg.MQTTURL, cfg.MQTTClient)
+	mqttClient, err := mq.NewClient(cfg.MQTTClient, cfg.MQTTURL, cfg.MQTTTopic)
 	failOnError(err, "failed to load client")
 	defer mqttClient.Close()
 
