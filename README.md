@@ -20,13 +20,14 @@ sudo ./GrovePi/Firmware/firmware_update.sh
 ```
 
 ### Installation:
+#### From the source
 In your raspberry pi
  ```
  go get github.com/sudarshan-reddy/airbender-appliance
  glide up
  go build
  ```
-Raspberry pi executable Binary
+#### Raspberry pi executable Binary
 ```
 wget https://github.com/sudarshan-reddy/airbender-appliance/releases/download/0.1b/airbender-appliance
 chmod+x airbender-appliance
