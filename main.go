@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/sudarshan-reddy/airbender-appliance/handlers"
-	"github.com/sudarshan-reddy/airbender-appliance/mq"
 	"github.com/sudarshan-reddy/groove"
 	"github.com/sudarshan-reddy/groove/dht"
+	"github.com/sudarshan-reddy/mqtt/mq"
 
 	log "github.com/Sirupsen/logrus"
 )
@@ -46,7 +46,7 @@ func main() {
 	defer ticker.Stop()
 	done := make(chan struct{})
 
-	mqttClient, err := mq.NewClient(cfg.MQTTClient, cfg.MQTTURL, cfg.MQTTTopic)
+	mqttClient, err := mq.NewClient(cfg.MQTTClient, cfg.MQTTURL, cfg.MQTTTopic, false)
 	failOnError(err, "failed to load client")
 	defer mqttClient.Close()
 
